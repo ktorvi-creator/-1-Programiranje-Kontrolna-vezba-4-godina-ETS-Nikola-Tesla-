@@ -9,19 +9,37 @@ using System.Collections.Generic;
 
 class Program
 {
+    // Program simulira istoriju pregledača korišćenjem steka.
     static void Main()
     {
-        var stack = new Stack<string>();
-        string line;
-        while (!string.IsNullOrWhiteSpace(line = Console.ReadLine()))
+        Stack<string> istorija = new Stack<string>(); // čuva URL-ove
+
+        while (true)
         {
-            if (line == "back")
+            string unos = Console.ReadLine();
+
+            if (unos == "exit") 
+                break; // izlazak iz programa
+
+            if (unos == "back")
             {
-                Console.WriteLine(stack.Count == 0 ? "-" : stack.Pop());
+                // ako nema prethodne stranice, ispisujemo "-"
+                if (istorija.Count == 0)
+                {
+                    Console.WriteLine("-");
+                }
+                else
+                {
+                    istorija.Pop(); // vraćamo se na prethodnu
+                    if (istorija.Count == 0)
+                        Console.WriteLine("-");
+                    else
+                        Console.WriteLine(istorija.Peek()); // prikaz trenutne stranice
+                }
             }
             else
             {
-                stack.Push(line);
+                istorija.Push(unos); // svaka nova stranica se upisuje
             }
         }
     }
