@@ -375,53 +375,125 @@ using System;
 
 class Program
 {
-    static T Saberi<T>(dynamic a, dynamic b) => (T)(a + b);
+    // Generička metoda koja sabira dva broja
+    static T Saberi<T>(T a, T b)
+    {
+        return (dynamic)a + (dynamic)b;
+    }
 
     static void Main()
     {
-        Console.WriteLine(Saberi<int>(2, 3));
-        Console.WriteLine(Saberi<double>(2.5, 1.2));
+        // Sabiranje int brojeva
+        int x = Saberi(5, 7);
+        Console.WriteLine(x);
+
+        // Sabiranje double brojeva
+        double y = Saberi(2.5, 3.4);
+        Console.WriteLine(y);
     }
 }
 ```
 
 ## 11. MessageBox sa dugmadima i helpom (Windows Forms)
 ```csharp
+using System;
 using System.Windows.Forms;
 
-MessageBox.Show("Tekst poruke", "Naslov", MessageBoxButtons.YesNo, MessageBoxIcon.Question,
-    MessageBoxDefaultButton.Button2, 0, true);
-// Pretpostavlja se da je HelpProvider podešen na formi za prikaz fajla pomoći.
+namespace Zadatak11
+{
+    public partial class Form1 : Form
+    {
+        public Form1()
+        {
+            InitializeComponent();
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            // Otvaranje help fajla (može biti bilo koji .txt)
+            string helpPutanja = @"C:\help.txt";
+
+            MessageBox.Show(
+                "Tekst u poruci",
+                "Naslov poruke",
+                MessageBoxButtons.YesNoCancel,     // uključuje i "Cancel" koji koristimo kao Help
+                MessageBoxIcon.Question,
+                MessageBoxDefaultButton.Button2,   // Button2 = No
+                0,
+                helpPutanja                        // help fajl
+            );
+        }
+    }
+}
 ```
 
 ## 12. Generička klasa sa jednim tipom + Student
 ```csharp
 using System;
 
-class Box<T>
+class GenerickaKlasa<T>
 {
-    private T data;
-    public Box(T value) => data = value;
-    public void Print() => Console.WriteLine($"{data} ({typeof(T).Name})");
+    private T podatak;
+
+    public GenerickaKlasa(T x)
+    {
+        podatak = x;
+    }
+
+    public void Ispisi()
+    {
+        Console.WriteLine("Tip: " + typeof(T));
+        Console.WriteLine("Vrednost: " + podatak);
+        Console.WriteLine();
+    }
 }
 
 class Student
 {
-    private int indeks, godina;
     private string ime;
-    public Student(int indeks, int godina, string ime)
-    { this.indeks = indeks; this.godina = godina; this.ime = ime; }
-    public override string ToString() => $"{ime}, {indeks}/{godina}";
+    private string prezime;
+    private string brojIndeksa;
+    private DateTime datumRodjenja;
+    private int godina;
+    private string smer;
+
+    public Student(string i, string p, string bi, DateTime dr, int g, string s)
+    {
+        ime = i;
+        prezime = p;
+        brojIndeksa = bi;
+        datumRodjenja = dr;
+        godina = g;
+        smer = s;
+    }
+
+    public override string ToString()
+    {
+        return "Student: " + ime + " " + prezime +
+               ", indeks: " + brojIndeksa +
+               ", datum rodjenja: " + datumRodjenja.ToShortDateString() +
+               ", godina: " + godina +
+               ", smer: " + smer;
+    }
 }
 
 class Program
 {
     static void Main()
     {
-        new Box<int>(5).Print();
-        new Box<double>(3.4).Print();
-        new Box<string>("tekst").Print();
-        new Box<Student>(new Student(123, 4, "Ana")).Print();
+        var g1 = new GenerickaKlasa<int>(10);
+        var g2 = new GenerickaKlasa<double>(3.14);
+        var g3 = new GenerickaKlasa<string>("Hello");
+
+        Student st = new Student("Marko", "Marković", "IT-42/22",
+                                 new DateTime(2004, 5, 12), 2, "IT");
+
+        var g4 = new GenerickaKlasa<Student>(st);
+
+        g1.Ispisi();
+        g2.Ispisi();
+        g3.Ispisi();
+        g4.Ispisi();
     }
 }
 ```
@@ -430,19 +502,42 @@ class Program
 ```csharp
 using System;
 
-class Pair<T, U>
+class Klasa<T, U>
 {
-    public T First { get; }
-    public U Second { get; }
-    public Pair(T first, U second) { First = first; Second = second; }
-    public void Print() => Console.WriteLine($"{First} ({typeof(T).Name}), {Second} ({typeof(U).Name})");
+    private T prvi;
+    private U drugi;
+
+    public Klasa(T a, U b)
+    {
+        prvi = a;
+        drugi = b;
+    }
+
+    public T Prvi
+    {
+        get { return prvi; }
+        set { prvi = value; }
+    }
+
+    public U Drugi
+    {
+        get { return drugi; }
+        set { drugi = value; }
+    }
+
+    public void Ispis()
+    {
+        Console.WriteLine("Prvi: " + prvi + " (tip: " + typeof(T) + ")");
+        Console.WriteLine("Drugi: " + drugi + " (tip: " + typeof(U) + ")");
+    }
 }
 
 class Program
 {
     static void Main()
     {
-        new Pair<char, char>('a', 'b').Print();
+        Klasa<char, char> obj = new Klasa<char, char>('A', 'Z');
+        obj.Ispis();
     }
 }
 ```
@@ -453,20 +548,44 @@ using System;
 
 class Point<T>
 {
-    public T X { get; set; }
-    public T Y { get; set; }
-    public Point(T x, T y) { X = x; Y = y; }
-    public void Print() => Console.WriteLine($"({X}, {Y})");
+    private T x;
+    private T y;
+
+    public Point(T x, T y)
+    {
+        this.x = x;
+        this.y = y;
+    }
+
+    public T X
+    {
+        get { return x; }
+        set { x = value; }
+    }
+
+    public T Y
+    {
+        get { return y; }
+        set { y = value; }
+    }
+
+    public void Prikazi()
+    {
+        Console.WriteLine("X = " + x + " (tip: " + typeof(T) + ")");
+        Console.WriteLine("Y = " + y + " (tip: " + typeof(T) + ")");
+    }
 }
 
 class Program
 {
     static void Main()
     {
-        var p1 = new Point<int>(1, 2);
-        var p2 = new Point<double>(1.5, 3.2);
-        p1.Print();
-        p2.Print();
+        Point<int> p1 = new Point<int>(3, 7);
+        Point<double> p2 = new Point<double>(2.5, 4.1);
+
+        p1.Prikazi();
+        Console.WriteLine();
+        p2.Prikazi();
     }
 }
 ```
@@ -477,21 +596,61 @@ using System;
 
 class Line<T>
 {
-    public T X1 { get; set; }
-    public T Y1 { get; set; }
-    public T X2 { get; set; }
-    public T Y2 { get; set; }
-    public Line(T x1, T y1, T x2, T y2)
-    { X1 = x1; Y1 = y1; X2 = x2; Y2 = y2; }
-    public void Print() => Console.WriteLine($"({X1},{Y1})-({X2},{Y2})");
+    private T x1;
+    private T y1;
+    private T x2;
+    private T y2;
+
+    public Line(T a, T b, T c, T d)
+    {
+        x1 = a;
+        y1 = b;
+        x2 = c;
+        y2 = d;
+    }
+
+    public T X1
+    {
+        get { return x1; }
+        set { x1 = value; }
+    }
+
+    public T Y1
+    {
+        get { return y1; }
+        set { y1 = value; }
+    }
+
+    public T X2
+    {
+        get { return x2; }
+        set { x2 = value; }
+    }
+
+    public T Y2
+    {
+        get { return y2; }
+        set { y2 = value; }
+    }
+
+    public void Prikazi()
+    {
+        Console.WriteLine("Tačka 1: (" + x1 + ", " + y1 + ")");
+        Console.WriteLine("Tačka 2: (" + x2 + ", " + y2 + ")");
+        Console.WriteLine("Tip: " + typeof(T));
+    }
 }
 
 class Program
 {
     static void Main()
     {
-        new Line<float>(0, 0, 1, 1).Print();
-        new Line<long>(-1, -2, 3, 4).Print();
+        Line<float> linija1 = new Line<float>(1.2f, 3.4f, 5.6f, 7.8f);
+        Line<long> linija2 = new Line<long>(10, 20, 30, 40);
+
+        linija1.Prikazi();
+        Console.WriteLine();
+        linija2.Prikazi();
     }
 }
 ```
@@ -500,22 +659,38 @@ class Program
 ```csharp
 using System;
 
-class Duo<T1, T2>
+class Klasa<T1, T2>
 {
-    public T1 A { get; set; }
-    public T2 B { get; set; }
-    public Duo(T1 a, T2 b) { A = a; B = b; }
-    public void Print() => Console.WriteLine($"{A} ({typeof(T1).Name}), {B} ({typeof(T2).Name})");
+    private T1 prvi;
+    private T2 drugi;
+
+    public Klasa(T1 a, T2 b)
+    {
+        prvi = a;
+        drugi = b;
+    }
+
+    public void Prikazi()
+    {
+        Console.WriteLine("Prvi: " + prvi + " (tip: " + typeof(T1) + ")");
+        Console.WriteLine("Drugi: " + drugi + " (tip: " + typeof(T2) + ")");
+        Console.WriteLine();
+    }
 }
 
 class Program
 {
     static void Main()
     {
-        new Duo<int, string>(1, "jedan").Print();
-        new Duo<char, bool>('c', true).Print();
-        new Duo<float, short>(1.1f, 2).Print();
-        new Duo<double, double>(2.3, 4.5).Print();
+        Klasa<int, string> o1 = new Klasa<int, string>(10, "Hello");
+        Klasa<char, bool> o2 = new Klasa<char, bool>('A', true);
+        Klasa<float, short> o3 = new Klasa<float, short>(3.5f, 12);
+        Klasa<double, double> o4 = new Klasa<double, double>(2.5, 7.9);
+
+        o1.Prikazi();
+        o2.Prikazi();
+        o3.Prikazi();
+        o4.Prikazi();
     }
 }
 ```
@@ -526,22 +701,55 @@ using System;
 
 class Cetvorougao<T>
 {
-    public T A { get; set; }
-    public T B { get; set; }
-    public T H { get; set; }
+    private T a;
+    private T b;
+    private T h;
+
     public Cetvorougao() { }
-    public Cetvorougao(T a, T b, T h) { A = a; B = b; H = h; }
-    public double Povrsina() => Convert.ToDouble(A) * Convert.ToDouble(H) / 2 + Convert.ToDouble(B) * Convert.ToDouble(H) / 2;
+
+    public Cetvorougao(T a, T b, T h)
+    {
+        this.a = a;
+        this.b = b;
+        this.h = h;
+    }
+
+    public T A
+    {
+        get { return a; }
+        set { a = value; }
+    }
+
+    public T B
+    {
+        get { return b; }
+        set { b = value; }
+    }
+
+    public T H
+    {
+        get { return h; }
+        set { h = value; }
+    }
+
+    // Površina: a * h
+    public double Povrsina()
+    {
+        double aa = Convert.ToDouble(a);
+        double hh = Convert.ToDouble(h);
+        return aa * hh;
+    }
 }
 
 class Program
 {
     static void Main()
     {
-        var c1 = new Cetvorougao<short>(3, 4, 2);
-        var c2 = new Cetvorougao<float>(2.5f, 3.5f, 1.5f);
-        Console.WriteLine(c1.Povrsina());
-        Console.WriteLine(c2.Povrsina());
+        Cetvorougao<short> c1 = new Cetvorougao<short>(5, 7, 3);
+        Cetvorougao<float> c2 = new Cetvorougao<float>(4.5f, 6.2f, 2.0f);
+
+        Console.WriteLine("Površina 1: " + c1.Povrsina());
+        Console.WriteLine("Površina 2: " + c2.Povrsina());
     }
 }
 ```
@@ -550,24 +758,40 @@ class Program
 ```csharp
 using System;
 
-class Holder<T>
+class MojTip<T>
 {
-    private T data;
-    public Holder(T value) { data = value; }
-    public T GetValue() => data;
-    public void PrintOther<U>(U value) => Console.WriteLine(value);
+    private T podatak;
+
+    public MojTip(T x)
+    {
+        podatak = x;
+    }
+
+    public T VratiVrednost()
+    {
+        return podatak;
+    }
+
+    public void Print<U>(U x)
+    {
+        Console.WriteLine("Print: " + x);
+    }
 }
 
 class Program
 {
     static void Main()
     {
-        var h1 = new Holder<int>(42);
-        var h2 = new Holder<string>("tekst");
-        Console.WriteLine(h1.GetValue());
-        Console.WriteLine(h2.GetValue());
-        h1.PrintOther("drugo");
-        h2.PrintOther(3.14f);
+        MojTip<int> o1 = new MojTip<int>(42);
+        MojTip<string> o2 = new MojTip<string>("Hello");
+
+        // ispis vrednosti podataka objekata
+        Console.WriteLine(o1.VratiVrednost());
+        Console.WriteLine(o2.VratiVrednost());
+
+        // generička metoda za tipove string i float
+        o1.Print<string>("Test");
+        o2.Print<float>(3.14f);
     }
 }
 ```
@@ -576,24 +800,46 @@ class Program
 ```csharp
 using System;
 
-class Base<T>
+class Osnovna<T>
 {
-    public T Data { get; set; }
-    public Base(T data) { Data = data; }
+    private T podatak1;
+
+    public Osnovna(T x)
+    {
+        podatak1 = x;
+    }
+
+    public T Podatak1
+    {
+        get { return podatak1; }
+        set { podatak1 = value; }
+    }
 }
 
-class Derived<T> : Base<T>
+class Izvedena<T> : Osnovna<T>
 {
-    public T Extra { get; set; }
-    public Derived(T data, T extra) : base(data) { Extra = extra; }
+    private T podatak2;
+
+    public Izvedena(T prvi, T drugi) : base(prvi)
+    {
+        podatak2 = drugi;
+    }
+
+    public T Podatak2
+    {
+        get { return podatak2; }
+        set { podatak2 = value; }
+    }
 }
 
 class Program
 {
     static void Main()
     {
-        var obj = new Derived<int>(1, 2);
-        Console.WriteLine($"Data={obj.Data}, Extra={obj.Extra}");
+        Izvedena<int> obj = new Izvedena<int>(10, 20);
+
+        Console.WriteLine("Podatak 1: " + obj.Podatak1);
+        Console.WriteLine("Podatak 2: " + obj.Podatak2);
     }
 }
 ```
@@ -602,18 +848,31 @@ class Program
 ```csharp
 using System;
 
-delegate TRez Del<TArg, TRez>(TArg arg);
-
 class Program
 {
-    static string F1<T>(T x) => $"Prvi: {x}";
-    static int F2<T>(T x) => x.GetHashCode();
+    // generički delegat
+    delegate TRez MojDelegat<TRez, TArg>(TArg x);
+
+    // generička metoda 1 – vraća string
+    static string Fun1<T>(T x)
+    {
+        return "Vrednost je: " + x;
+    }
+
+    // generička metoda 2 – vraća int
+    static int Fun2<T>(T x)
+    {
+        return x.GetHashCode();   // jednostavno pretvaranje u int
+    }
 
     static void Main()
     {
-        Del<int, string> d1 = F1;
-        Del<double, int> d2 = F2;
-        Console.WriteLine(d1(5));
+        // delegat 1: rezultat string, argument int
+        MojDelegat<string, int> d1 = Fun1<int>;
+        Console.WriteLine(d1(10));
+
+        // delegat 2: rezultat int, argument double
+        MojDelegat<int, double> d2 = Fun2<double>;
         Console.WriteLine(d2(3.14));
     }
 }
