@@ -52,30 +52,40 @@ using System;
 
 class Program
 {
+    // Nalazi početak segmenta dužine k sa najvećim zbirom
     static void Main()
     {
-        var parts = Console.ReadLine().Split();
-        int n = int.Parse(parts[0]);
-        int k = int.Parse(parts[1]);
+        int n = int.Parse(Console.ReadLine());
+        int k = int.Parse(Console.ReadLine());
 
+        // Cuvamo samo niz realnih brojeva (double)
         double[] a = new double[n];
-        for (int i = 0; i < n; i++) a[i] = double.Parse(Console.ReadLine());
 
-        double sum = 0;
-        for (int i = 0; i < k; i++) sum += a[i];
-        double maxSum = sum; int start = 0;
+        for (int i = 0; i < n; i++)
+            a[i] = double.Parse(Console.ReadLine());
 
-        for (int i = k; i < n; i++)
+        // Prvi zbir – zbir prvih k elemenata
+        double trenutniZbir = 0;
+        for (int i = 0; i < k; i++)
+            trenutniZbir += a[i];
+
+        double maxZbir = trenutniZbir;
+        int maxPoz = 0; // početna pozicija segmenta sa najvećim zbirom
+
+        // Klizni prozor – izbegava nepotrebno sabiranje cele podsekvence
+        for (int i = 1; i <= n - k; i++)
         {
-            sum += a[i] - a[i - k];
-            if (sum > maxSum)
+            // Oduzimamo prvi element prethodnog segmenta i dodajemo novi
+            trenutniZbir = trenutniZbir - a[i - 1] + a[i + k - 1];
+
+            if (trenutniZbir > maxZbir)
             {
-                maxSum = sum;
-                start = i - k + 1;
+                maxZbir = trenutniZbir;
+                maxPoz = i;
             }
         }
 
-        Console.WriteLine(start);
+        Console.WriteLine(maxPoz);
     }
 }
 ```
@@ -87,29 +97,37 @@ using System.Collections.Generic;
 
 class Program
 {
+    // Program koristi generički rečnik za čuvanje proizvoda i njihovih cena.
     static void Main()
     {
-        var cene = new Dictionary<string, decimal>(StringComparer.OrdinalIgnoreCase)
-        {
-            ["hleb"] = 70,
-            ["mleko"] = 120
-        };
+        Dictionary<string, double> proizvodi = new Dictionary<string, double>();
 
-        Console.Write("Naziv proizvoda: ");
-        string proizvod = Console.ReadLine();
-
-        if (cene.TryGetValue(proizvod, out var cena))
+        // Unos proizvoda dok se ne unese "kraj"
+        while (true)
         {
-            Console.WriteLine($"Cena: {cena}");
+            string naziv = Console.ReadLine();
+
+            if (naziv == "kraj")
+                break;
+
+            // Ako proizvod postoji u rečniku → prikaži cenu
+            if (proizvodi.ContainsKey(naziv))
+            {
+                Console.WriteLine(proizvodi[naziv]);
+            }
+            else
+            {
+                // Ako ne postoji → dodaj novi proizvod
+                double cena = double.Parse(Console.ReadLine());
+                proizvodi[naziv] = cena;
+            }
         }
-        else
-        {
-            Console.Write("Unesi cenu: ");
-            cene[proizvod] = decimal.Parse(Console.ReadLine());
-        }
 
-        foreach (var par in cene)
-            Console.WriteLine($"{par.Key} -> {par.Value}");
+        // Ispis celog rečnika
+        foreach (var par in proizvodi)
+        {
+            Console.WriteLine($"{par.Key} {par.Value}");
+        }
     }
 }
 ```
@@ -121,19 +139,36 @@ using System.Collections.Generic;
 
 class Program
 {
+    // Program broji koliko se puta pojavljuje svaka od k zadatih reči među prvih n reči.
     static void Main()
     {
         int n = int.Parse(Console.ReadLine());
-        var reci = new List<string>();
-        for (int i = 0; i < n; i++) reci.Add(Console.ReadLine());
+        List<string> reci = new List<string>(n);
 
-        int m = int.Parse(Console.ReadLine());
-        for (int i = 0; i < m; i++)
+        // Učitavanje n reči
+        for (int i = 0; i < n; i++)
+            reci.Add(Console.ReadLine());
+
+        int k = int.Parse(Console.ReadLine());
+
+        // Učitavanje k različitih reči koje proveravamo
+        List<string> trazene = new List<string>(k);
+        for (int i = 0; i < k; i++)
+            trazene.Add(Console.ReadLine());
+
+        // Brojanje pojavljivanja
+        foreach (string trazi in trazene)
         {
-            string rec = Console.ReadLine();
-            int br = 0;
-            foreach (var r in reci) if (r == rec) br++;
-            Console.WriteLine(br);
+            int brojPojavljivanja = 0;
+
+            // Prolazak kroz prvih n reči
+            foreach (string r in reci)
+            {
+                if (r == trazi)
+                    brojPojavljivanja++;
+            }
+
+            Console.WriteLine(brojPojavljivanja);
         }
     }
 }
@@ -143,27 +178,42 @@ class Program
 ```csharp
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 class Program
 {
+    // Jednostavnije: brojimo samo polja koja su pogođena.
     static void Main()
     {
-        var firstLine = Console.ReadLine().Split();
-        int n = int.Parse(firstLine[0]);
-        int k = int.Parse(firstLine[1]);
-        var hits = Console.ReadLine().Split().Select(int.Parse);
+        string[] prvi = Console.ReadLine().Split();
+        int N = int.Parse(prvi[0]);
+        int K = int.Parse(prvi[1]);
 
-        var counts = new Dictionary<int, int>();
-        foreach (int h in hits)
+        Dictionary<int, int> broj = new Dictionary<int, int>();
+
+        string[] pogodci = Console.ReadLine().Split();
+
+        for (int i = 0; i < N; i++)
         {
-            counts[h] = counts.TryGetValue(h, out var c) ? c + 1 : 1;
+            int p = int.Parse(pogodci[i]);
+
+            if (!broj.ContainsKey(p))
+                broj[p] = 0;
+
+            broj[p]++;
         }
 
-        var replace = counts.Where(p => p.Value >= k).Select(p => p.Key).ToList();
-        Console.WriteLine(replace.Count);
-        if (replace.Count > 0)
-            Console.WriteLine(string.Join(" ", replace));
+        List<int> rezultat = new List<int>();
+
+        foreach (var par in broj)
+        {
+            if (par.Value >= K)
+                rezultat.Add(par.Key);
+        }
+
+        Console.WriteLine(rezultat.Count);
+
+        if (rezultat.Count > 0)
+            Console.WriteLine(string.Join(" ", rezultat));
     }
 }
 ```
@@ -171,24 +221,69 @@ class Program
 ## 6. Generički delegat za četiri operacije
 ```csharp
 using System;
+using System.Windows.Forms;
 
-delegate T Operacija<T>(T a, T b);
-
-class Program
+namespace Zadatak6
 {
-    static T Izvrsi<T>(Operacija<T> op, T a, T b) => op(a, b);
+    // generički delegat
+    public delegate T Operacija<T>(T a, T b);
 
-    static void Main()
+    public partial class Form1 : Form
     {
-        Operacija<int> saberi = (a, b) => a + b;
-        Operacija<int> oduzmi = (a, b) => a - b;
-        Operacija<int> pomnozi = (a, b) => a * b;
-        Operacija<double> podeli = (a, b) => a / b;
+        public Form1()
+        {
+            InitializeComponent();
+        }
 
-        Console.WriteLine(Izvrsi(saberi, 2, 3));
-        Console.WriteLine(Izvrsi(oduzmi, 5, 1));
-        Console.WriteLine(Izvrsi(pomnozi, 4, 6));
-        Console.WriteLine(Izvrsi(podeli, 10.0, 3.0));
+        // INT operacije
+        int SaberiInt(int a, int b) { return a + b; }
+        int OduzmiInt(int a, int b) { return a - b; }
+        int PomnoziInt(int a, int b) { return a * b; }
+        int PodeliInt(int a, int b) { return a / b; }
+
+        // DOUBLE operacije
+        double SaberiDouble(double a, double b) { return a + b; }
+        double OduzmiDouble(double a, double b) { return a - b; }
+        double PomnoziDouble(double a, double b) { return a * b; }
+        double PodeliDouble(double a, double b) { return a / b; }
+
+        private void btnIzracunaj_Click(object sender, EventArgs e)
+        {
+            string op = listBoxOperacije.SelectedItem.ToString();
+            string tip = listBoxTip.SelectedItem.ToString();
+
+            string s1 = txtA.Text;
+            string s2 = txtB.Text;
+
+            if (tip == "Celi brojevi")
+            {
+                int a = int.Parse(s1);
+                int b = int.Parse(s2);
+
+                Operacija<int> o = null;
+
+                if (op == "Sabiranje") o = SaberiInt;
+                if (op == "Oduzimanje") o = OduzmiInt;
+                if (op == "Mnozenje") o = PomnoziInt;
+                if (op == "Deljenje") o = PodeliInt;
+
+                MessageBox.Show("Rezultat: " + o(a, b));
+            }
+            else // realni brojevi
+            {
+                double a = double.Parse(s1);
+                double b = double.Parse(s2);
+
+                Operacija<double> o = null;
+
+                if (op == "Sabiranje") o = SaberiDouble;
+                if (op == "Oduzimanje") o = OduzmiDouble;
+                if (op == "Mnozenje") o = PomnoziDouble;
+                if (op == "Deljenje") o = PodeliDouble;
+
+                MessageBox.Show("Rezultat: " + o(a, b));
+            }
+        }
     }
 }
 ```
@@ -209,12 +304,13 @@ class Program
 {
     static void Main()
     {
-        var pi = new PrintInfo();
-        pi.Print(5);
-        pi.Print(3.14);
-        pi.Print('a');
-        pi.Print(true);
-        pi.Print("tekst");
+        PrintInfo p = new PrintInfo();
+
+        p.Print<int>(5);
+        p.Print<double>(3.14);
+        p.Print<char>('A');
+        p.Print<bool>(true);
+        p.Print<string>("Hello");
     }
 }
 ```
@@ -225,12 +321,15 @@ using System;
 
 class Program
 {
-    static bool Jednak<T>(T a, T b) => a.Equals(b);
+    static bool Jednak<T>(T a, T b)
+    {
+        return a.Equals(b);
+    }
 
     static void Main()
     {
-        Console.WriteLine(Jednak(3, 3));      // true
-        Console.WriteLine(Jednak("abc", "ab")); // false
+        Console.WriteLine(Jednak(3, 3));         // true
+        Console.WriteLine(Jednak("abc", "ab"));  // false
     }
 }
 ```
@@ -241,18 +340,31 @@ using System;
 
 class Program
 {
-    static void Swap<T>(ref T a, ref T b)
+    // Generička metoda za ispis
+    static void Ispis<T>(T x)
     {
-        (a, b) = (b, a);
+        Console.WriteLine(x);
     }
 
-    static void Print<T>(T a, T b) => Console.WriteLine($"{a} {b}");
+    // Generička metoda za zamenu vrednosti
+    static void Zameni<T>(ref T a, ref T b)
+    {
+        T temp = a;
+        a = b;
+        b = temp;
+    }
 
     static void Main()
     {
-        string ime = "Petar", prezime = "Petrović";
-        Swap(ref ime, ref prezime);
-        Print(ime, prezime);
+        string ime = "Petar";
+        string prezime = "Petrović";
+
+        // zamena pomoću generičke metode
+        Zameni(ref ime, ref prezime);
+
+        // ispis novog poretka
+        Ispis(ime);
+        Ispis(prezime);
     }
 }
 ```
