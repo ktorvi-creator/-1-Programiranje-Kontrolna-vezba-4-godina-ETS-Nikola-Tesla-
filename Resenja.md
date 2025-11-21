@@ -882,54 +882,119 @@ class Program
 ```csharp
 using System;
 
-delegate double RealOp(double a, double b);
-```
-
-## 22. Delegat sa četiri funkcije
-```csharp
-using System;
-
-delegate double Kalk(double a, double b);
-
 class Program
 {
-    static double Saberi(double a, double b) => a + b;
-    static double Oduzmi(double a, double b) => a - b;
-    static double Pomnozi(double a, double b) => a * b;
-    static double Podeli(double a, double b) => a / b;
+    // tipizirani delegat
+    delegate double Operacija(double a, double b);
+
+    static double Saberi(double a, double b)
+    {
+        return a + b;
+    }
+
+    static double Oduzmi(double a, double b)
+    {
+        return a - b;
+    }
+
+    static double Pomnozi(double a, double b)
+    {
+        return a * b;
+    }
+
+    static double Podeli(double a, double b)
+    {
+        return a / b;   // bez provere radi jednostavnosti
+    }
 
     static void Main()
     {
-        Kalk d = Saberi;
-        Console.WriteLine(d(2, 3));
-        d = Oduzmi; Console.WriteLine(d(5, 1));
-        d = Pomnozi; Console.WriteLine(d(3, 4));
-        d = Podeli; Console.WriteLine(d(8, 2));
+        Operacija op;
+
+        op = Saberi;
+        Console.WriteLine("Sabiranje: " + op(10, 5));
+
+        op = Oduzmi;
+        Console.WriteLine("Oduzimanje: " + op(10, 5));
+
+        op = Pomnozi;
+        Console.WriteLine("Mnozenje: " + op(10, 5));
+
+        op = Podeli;
+        Console.WriteLine("Deljenje: " + op(10, 5));
     }
 }
+```
+
+## 22. Delegat sa 2 funkcije
+```csharp
+using System;
+
+class Program
+{
+    // generički delegat
+    delegate TRez MojDelegat<TRez, TArg>(TArg x);
+
+    // generička metoda 1: string rezultat, argument tipa T
+    static string Fun1<T>(T x)
+    {
+        return "String funkcija: " + x;
+    }
+
+    // generička metoda 2: int rezultat, argument tipa T
+    static int Fun2<T>(T x)
+    {
+        return x;
+    }
+
+    static void Main()
+    {
+        // delegat 1: rezultat string, argument int, pokazuje na Fun1
+        MojDelegat<string, int> d1 = Fun1<int>;
+        Console.WriteLine(d1(10));
+
+        // delegat 2: rezultat int, argument double, pokazuje na Fun2
+        MojDelegat<int, double> d2 = Fun2<double>;
+        Console.WriteLine(d2(3.14));
+    }
+}
+
 ```
 
 ## 23. Negenerički interfejs sa generičkom metodom
 ```csharp
 using System;
 
+// negenerički interfejs
 interface IInfo
 {
-    string GetInfo<T1, T2>(T1 a, T2 b);
+    string GetInfo<T1, T2>(T1 x, T2 y);
 }
 
+// klasa koja implementira interfejs
 class CInfo : IInfo
 {
-    public string GetInfo<T1, T2>(T1 a, T2 b) => $"Vrednosti: {a}, {b}; Tipovi: {typeof(T1).Name}, {typeof(T2).Name}";
+    public string GetInfo<T1, T2>(T1 x, T2 y)
+    {
+        return "Vrednost 1: " + x +
+               " (tip: " + typeof(T1) + ")\n" +
+               "Vrednost 2: " + y +
+               " (tip: " + typeof(T2) + ")";
+    }
 }
 
 class Program
 {
     static void Main()
     {
-        IInfo info = new CInfo();
-        Console.WriteLine(info.GetInfo(3, 2.5));
-        Console.WriteLine(info.GetInfo('c', 1.1f));
+        CInfo obj = new CInfo();
+
+        // kombinacija int i double
+        Console.WriteLine(obj.GetInfo<int, double>(5, 3.14));
+        Console.WriteLine();
+
+        // kombinacija char i float
+        Console.WriteLine(obj.GetInfo<char, float>('A', 2.5f));
     }
 }
 ```
