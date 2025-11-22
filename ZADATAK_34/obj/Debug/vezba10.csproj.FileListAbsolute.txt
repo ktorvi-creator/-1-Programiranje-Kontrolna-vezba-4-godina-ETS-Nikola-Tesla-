@@ -1,0 +1,9 @@
+C:\Users\Ucenik14\Desktop\vezba10\vezba10\obj\Debug\vezba10.Form1.resources
+C:\Users\Ucenik14\Desktop\vezba10\vezba10\obj\Debug\vezba10.Form2.resources
+C:\Users\Ucenik14\Desktop\vezba10\vezba10\obj\Debug\vezba10.Properties.Resources.resources
+C:\Users\Ucenik14\Desktop\vezba10\vezba10\obj\Debug\vezba10.csproj.GenerateResource.cache
+C:\Users\Ucenik14\Desktop\vezba10\vezba10\bin\Debug\vezba10.exe.config
+C:\Users\Ucenik14\Desktop\vezba10\vezba10\bin\Debug\vezba10.exe
+C:\Users\Ucenik14\Desktop\vezba10\vezba10\bin\Debug\vezba10.pdb
+C:\Users\Ucenik14\Desktop\vezba10\vezba10\obj\Debug\vezba10.exe
+C:\Users\Ucenik14\Desktop\vezba10\vezba10\obj\Debug\vezba10.pdb
