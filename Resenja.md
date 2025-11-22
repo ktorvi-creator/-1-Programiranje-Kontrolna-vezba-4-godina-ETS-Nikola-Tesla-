@@ -1274,31 +1274,4 @@ class Program
     }
 }
 ```
-## 28. Prosleđivanje podatka proizvoljnog tipa sa roditeljske na child formu pomoću svojstava.
-```csharp
-
-```
-
-## 29. Prosleđivanje podatka proizvoljnog tipa sa roditeljske na child formu pomoću konstruktora.
-```csharp
-
-```
-
-## 30. Prosleđivanje podatka proizvoljnog tipa sa roditeljske na child formu pomoću objekta forme.
-```csharp
-
-```
-
-## 31. Prosleđivanje podatka proizvoljnog tipa sa roditeljske na child formu pomoću delegata.
-```csharp
-
-```
-
-## 32. Prosleđivanje podatka proizvoljnog tipa sa **child** na roditeljsku formu pomoću svojstava.
-```csharp
-
-```
-## 33. Prosleđivanje podatka proizvoljnog tipa sa child na roditeljsku formu bez upotrebe svojstava.
-```csharp
-
-```
+## 28 - 44 Imate u folderu 28-44 zadaci
